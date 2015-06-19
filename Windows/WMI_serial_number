@@ -14,8 +14,10 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+#!!!Install Windows Remote Administration Tools!!!
+
 $LastLogonDate = (Get-Date).AddDays(-30)
-$ADComputers = Get-ADComputer -Filter {LastLogonDate -gt $LastLogonDate} -SearchBase "<Enter BaseDN for searching>" -SearchScope Subtree | Select -ExpandProperty Name
+$ADComputers = Get-ADComputer -Filter {LastLogonDate -gt $LastLogonDate} -SearchBase "<BASEDN_PATH_IN_AD>" -SearchScope Subtree | Select -ExpandProperty Name
 $Mappings = @()
 $ADComputers | ForEach-Object {
     $Skip = $False
