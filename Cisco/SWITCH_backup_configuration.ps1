@@ -54,7 +54,7 @@ If (-Not(Test-Path ".\$((Get-Date).Year)\KW$(Get-Date -UFormat %V)"))
 ForEach ($Switch in $Switches)
 {
     $Random = Get-Random
-    $Command = ".\Binary\snmpset.exe -v 1 -c $($SNMPCommunity) $($Switch).ifsworld.net "
+    $Command = ".\Binary\snmpset.exe -v 1 -c $($SNMPCommunity) $($Switch)"
     $Command = $Command + ".1.3.6.1.4.1.9.9.96.1.1.1.1.2.$($Random) i 1 "
     $Command = $Command + ".1.3.6.1.4.1.9.9.96.1.1.1.1.3.$($Random) i 3 "
     $Command = $Command + ".1.3.6.1.4.1.9.9.96.1.1.1.1.4.$($Random) i 1 "
@@ -69,7 +69,7 @@ ForEach ($Switch in $Switches)
     }
     Move-Item -Path ".\TFTPDirectory\$($Switch).cfg" -Destination ".\$((Get-Date).Year)\KW$(Get-Date -UFormat %V)" -Force
 	$Random = Get-Random
-    $Command = ".\Binary\snmpset.exe -v 1 -c $($SNMPCommunity) $($Switch).ifsworld.net "
+    $Command = ".\Binary\snmpset.exe -v 1 -c $($SNMPCommunity) $($Switch)"
 	$Command = $Command + ".1.3.6.1.4.1.9.9.10.1.2.1.1.2.$($Random) i 3 "
     $Command = $Command + ".1.3.6.1.4.1.9.9.10.1.2.1.1.3.$($Random) i 1 "
     $Command = $Command + ".1.3.6.1.4.1.9.9.10.1.2.1.1.4.$($Random) a $($TFTPServer) "
