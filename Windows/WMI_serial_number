@@ -41,7 +41,15 @@ $ADComputers | ForEach-Object {
             If (Test-Connection -ComputerName $IP -Count 2 -Quiet)
             {
                 $Active = $True
-                $Mapping.SerialNumber = Get-WmiObject -ComputerName $IP win32_bios | Select -ExpandProperty SerialNumber
+                Try
+                {
+                    $Mapping.SerialNumber = Get-WmiObject -ComputerName $IP win32_bios | Select -ExpandProperty SerialNumber
+                    Break
+                }
+                Catch
+                {
+                    $Mapping.SerialNumber = "WMI not accessible"
+                }
                 Break
             }
         }
