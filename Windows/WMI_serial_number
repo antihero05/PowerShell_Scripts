@@ -1,0 +1,37 @@
+$LastLogonDate = (Get-Date).AddDays(-30)
+$ADComputers = Get-ADComputer -Filter {LastLogonDate -gt $LastLogonDate} -SearchBase "<Enter BaseDN for searching>" -SearchScope Subtree | Select -ExpandProperty Name
+$Mappings = @()
+$ADComputers | ForEach-Object {
+    $Skip = $False
+    $Mapping = "" | Select Name, SerialNumber
+    $Mapping.Name = $_
+    Try
+    {
+        $IPs = [System.Net.Dns]::GetHostAddresses($Mapping.Name) | Select -ExpandProperty IPAddressToString
+    }
+    Catch
+    {
+        $Mapping.SerialNumber = "No DNS entry"
+        $Skip = $True
+    }
+    If ($Skip -eq $False)
+    {
+        $Active = $False
+        ForEach ($IP in $IPs) 
+        {
+            $IP = $_
+            If (Test-Connection -ComputerName $IP -Count 2 -Quiet)
+            {
+                $Active = $True
+                $Mapping.SerialNumber = Get-WmiObject -ComputerName $IP win32_bios | Select -ExpandProperty SerialNumber
+                Break
+            }
+        }
+        If ($Active -eq $False)
+        {
+            $Mapping.SerialNumber = "Not reachable"
+        }
+    }
+    $Mappings += $Mapping
+}
+$Mappings | ConvertTo-HTML | Out-File .\WMI_serial_number.htm
