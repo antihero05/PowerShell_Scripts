@@ -43,8 +43,8 @@ $ADComputers | ForEach-Object {
                 $Active = $True
                 Try
                 {
-                    $Mapping.SerialNumber = Get-WmiObject -ComputerName $IP win32_bios | Select -ExpandProperty SerialNumber
-                    Break
+                    $ErrorActionPreference = "Stop"
+                    $Mapping.SerialNumber = (Get-WmiObject -ComputerName $IP win32_bios) | Select -ExpandProperty SerialNumber
                 }
                 Catch
                 {
