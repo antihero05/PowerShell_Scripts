@@ -73,7 +73,7 @@ ForEach ($VM in $VMwareVM)
     {
         $ErrorActionPreference = "Stop"
         $NICStat = Get-Stat -Entity ($VM) -Start (Get-Date).AddDays(-30) -Finish (Get-Date) -MaxSamples 1000 -Stat net.usage.average
-        $NICLoad = $HDDStat | Measure-Object -Property Value -Average -Maximum -Minimum  
+        $NICLoad = $NICStat | Measure-Object -Property Value -Average -Maximum -Minimum  
         $VMStat."NICLoadAvg (KByte/s)" = [math]::Round($NICLoad.Average)
         $VMStat."NICLoadMax (KByte/s)" = [math]::Round($NICLoad.Maximum)
         $VMStat."NICLoadMin (KByte/s)" = [math]::Round($NICLoad.Minimum)
