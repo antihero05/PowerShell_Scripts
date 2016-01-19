@@ -39,8 +39,8 @@ Function Test-FileLocked { Param ([Parameter(Mandatory=$True)][String]$Path)
     }
 }
 #End Functions
-$Switches = @(#Add comma separated cisco switch names)
-$SNMPCommunity = "<SNMP_WRITE_COMMUNITY>"
+$Switches = @("erldcsw01")
+$SNMPCommunity = "pub54smw"
 $TFTPServer = $([System.Net.Dns]::GetHostAddresses([System.Net.Dns]::GetHostName()) | Where-Object {$_.AddressFamily -eq "InterNetwork"}).IPAddressToString
 If (-Not(Test-Path "..\Shared\$((Get-Date).Year)\KW$(Get-Date -UFormat %V)"))
 {
@@ -52,6 +52,12 @@ If (-Not(Test-Path "..\Shared\$((Get-Date).Year)\KW$(Get-Date -UFormat %V)"))
 }
 ForEach ($Switch in $Switches)
 {
+    $IPArray = $TFTPServer.Split(".")
+    $Octet1 = "{0:X2}" -f [int]$IPArray[0]
+    $Octet2 = "{0:X2}" -f [int]$IPArray[1]
+    $Octet3 = "{0:X2}" -f [int]$IPArray[2]
+    $Octet4 = "{0:X2}" -f [int]$IPArray[3]
+    $TFTPServerHex = $Octet1 + $Octet2 + $Octet3 + $Octet4
     $Random = Get-Random
     $Command = "..\Binary\snmpset.exe -v 2c -c $($SNMPCommunity) $($Switch) "
     $Command = $Command + ".1.3.6.1.4.1.674.10895.5000.2.6132.1.1.1.2.9.1.1.0 i 1 "
@@ -59,7 +65,7 @@ ForEach ($Switch in $Switches)
     $Command = $Command + ".1.3.6.1.4.1.674.10895.5000.2.6132.1.1.1.2.9.1.4.0 s running-config "
     $Command = $Command + ".1.3.6.1.4.1.674.10895.5000.2.6132.1.1.1.2.9.1.5.0 i 3 "
     $Command = $Command + ".1.3.6.1.4.1.674.10895.5000.2.6132.1.1.1.2.9.1.8.0 i 1 "
-    $Command = $Command + ".1.3.6.1.4.1.674.10895.5000.2.6132.1.1.1.2.9.1.9.0 x 0A0A0625 "
+    $Command = $Command + ".1.3.6.1.4.1.674.10895.5000.2.6132.1.1.1.2.9.1.9.0 x $($TFTPServerHex) "
     $Command = $Command + ".1.3.6.1.4.1.674.10895.5000.2.6132.1.1.1.2.9.1.13.0 s $($Switch).cfg "
     $Command = $Command + ".1.3.6.1.4.1.674.10895.5000.2.6132.1.1.1.2.9.1.6.0 i 1 "
     Invoke-Expression -Command:$Command
