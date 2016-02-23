@@ -16,7 +16,7 @@
 
 #!!!Install Windows Remote Administration Tools!!!
 
-$LDAPController = ""<GLOBAL_CATALOG_DOMAIN_CONTROLLER>""
+$LDAPController = "<GLOBAL_CATALOG_DOMAIN_CONTROLLER>"
 $PrimaryDNSServer = "<IP_PRIMARY_DNS>"
 $SecondaryDNSServer = "<IP_SECONDARY_DNS>"
 $PrimaryWINSServer = "<IP_PRIMARY_WINS>"
