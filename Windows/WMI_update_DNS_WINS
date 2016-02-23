@@ -21,7 +21,7 @@ $PrimaryDNSServer = "<IP_PRIMARY_DNS>"
 $SecondaryDNSServer = "<IP_SECONDARY_DNS>"
 $PrimaryWINSServer = "<IP_PRIMARY_WINS>"
 $SecondaryWINSServer = "<IP_SECONDARY_WINS>"
-$ADComputers = Get-ADComputer -Filter {Enabled -eq $True -and OperatingSystem -like "Windows*"} -SearchBase ""<BASEDN_PATH_IN_AD_FOR_SERVERS>" " -SearchScope Subtree -Properties OperatingSystem -Server $LDAPController
+$ADComputers = Get-ADComputer -Filter {Enabled -eq $True -and OperatingSystem -like "Windows*"} -SearchBase "<BASEDN_PATH_IN_AD_FOR_SERVERS>" -SearchScope Subtree -Properties OperatingSystem -Server $LDAPController
 $ComputerUpdateStatus = @()
 $DNSServers = $PrimaryDNSServer, $SecondaryDNSServer
 ForEach ($ADComputer in $ADComputers)
