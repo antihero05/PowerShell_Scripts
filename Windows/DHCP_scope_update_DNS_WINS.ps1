@@ -95,4 +95,4 @@ Foreach ($ADDHCPServer in $ADDHCPServers)
         $DHCPIPv4ScopeUpdateStatus += $DHCPIPv4ScopeUpdateStatusEntry
     }
 }
-$DHCPIPv4ScopeUpdateStatus | ConvertTo-HTML | Out-File .\WMI_DHCP_scope_update_DNS_WINS.htm
+$DHCPIPv4ScopeUpdateStatus | ConvertTo-HTML | Out-File .\DHCP_scope_update_DNS_WINS.htm
