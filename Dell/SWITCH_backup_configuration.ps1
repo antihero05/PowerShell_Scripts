@@ -39,8 +39,8 @@ Function Test-FileLocked { Param ([Parameter(Mandatory=$True)][String]$Path)
     }
 }
 #End Functions
-$Switches = @("erldcsw01")
-$SNMPCommunity = "pub54smw"
+$Switches = @(#Add comma separated cisco switch names)
+$SNMPCommunity = "<SNMP_WRITE_COMMUNITY>"
 $TFTPServer = $([System.Net.Dns]::GetHostAddresses([System.Net.Dns]::GetHostName()) | Where-Object {$_.AddressFamily -eq "InterNetwork"}).IPAddressToString
 If (-Not(Test-Path "..\Shared\$((Get-Date).Year)\KW$(Get-Date -UFormat %V)"))
 {
