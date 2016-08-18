@@ -22,7 +22,7 @@ $SecuredCredentials = $SecuredCredentialsPlain | ConvertTo-Securestring
 $Credential = New-Object System.Management.Automation.PSCredential -Argumentlist "<NAME_OF_ADMINISTRATOR>", $SecuredCredentials
 If (-Not(Test-Path ".\$((Get-Date).Year)\KW$(Get-Date -UFormat %V)"))
 {
-    If (-Not(Test-Path ".$((Get-Date).Year)"))
+    If (-Not(Test-Path ".\$((Get-Date).Year)"))
     {
         New-Item -ItemType Directory -Path ".\$((Get-Date).Year)"
     }
