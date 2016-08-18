@@ -16,7 +16,7 @@
 
 #!!!Create a folder "TFTPDirectory" where the script resides which is configured as the root folder of a local TFTP server!!!
 
-$USVs = @(#Add comma separated cisco switch names)
+$APCupss = @(#Add comma separated APC ups names)
 $SecuredCredentialsPlain = Get-Content("<PATH_TO_DOCUMENT_WITH_CREDENTIALS_AS_SECURESTRING>")
 $SecuredCredentials = $SecuredCredentialsPlain | ConvertTo-Securestring
 $Credential = New-Object System.Management.Automation.PSCredential -Argumentlist "<NAME_OF_ADMINISTRATOR>", $SecuredCredentials
@@ -28,18 +28,18 @@ If (-Not(Test-Path ".\$((Get-Date).Year)\KW$(Get-Date -UFormat %V)"))
     }
     New-Item -ItemType Directory -Path ".\$((Get-Date).Year)\KW$(Get-Date -UFormat %V)"
 }
-ForEach ($USV in $USVs)
+ForEach ($APCUps in $APCUpss)
 {
-    $FTPRequest = [System.Net.FtpWebRequest]::Create("ftp://$($USV)/config.ini")
+    $FTPRequest = [System.Net.FtpWebRequest]::Create("ftp://$($APCUps)/config.ini")
     $FTPRequest.Credentials = $Credential.GetNetworkCredential()
     $FTPRequest.Method = [System.Net.WebRequestMethods+Ftp]::DownloadFile
     $FTPResponse = $FTPRequest.GetResponse()
     $ResponseStream = $FTPResponse.GetResponseStream()
     $StreamReader = New-Object System.IO.StreamReader($ResponseStream)
-    $StreamWriter = New-Object System.IO.StreamWriter(".\TFTPDirectory\$($USV).cfg")
+    $StreamWriter = New-Object System.IO.StreamWriter(".\TFTPDirectory\$($APCUps).cfg")
     $StreamWriter.WriteLine($StreamReader.ReadToEnd())
     $StreamWriter.Close()
     $StreamReader.Close()
     $FTPResponse.Close()
-    Move-Item -Path ".\TFTPDirectory\$($USV).cfg" -Destination ".\$((Get-Date).Year)\KW$(Get-Date -UFormat %V)" -Force
+    Move-Item -Path ".\TFTPDirectory\$($APCUps).cfg" -Destination ".\$((Get-Date).Year)\KW$(Get-Date -UFormat %V)" -Force
 }
