@@ -215,17 +215,14 @@ Function Clone-NetWorkerSaveSet
 }
 # End Functions
 # Main()
-If (Test-Path "workingset.csv")
-{
-    $NetWorkerSaveSets = Import-Csv "workingset.csv"
-}
-Else
+If (-Not (Test-Path "workingset.csv"))
 {
     $NetWorkerSaveSets = Get-NetWorkerFullSaveSets -Quartal $Quartal -NetWorkerMediaPools $NetWorkerMediaPoolsRetentionOneYear
     $NetWorkerSaveSetsWorkingSet = Get-NetWorkerLatestSaveSets -NetWorkerSaveSets $NetWorkerSaveSets
     $NetWorkerSaveSetsWorkingSet | ConvertTo-Csv | Out-File "workingset.csv"
     $NetWorkerSaveSetsWorkingSet | ConvertTo-Csv | Out-File "$(Get-FormattedDate)_cloningset.csv"
 }
+$NetWorkerSaveSets = Import-Csv "workingset.csv"
 $NetWorkerSaveSetRetention = Get-Retention -Quartal $Quartal -Years 1
 Write-Output "### Started cloning for tape backup at $(Get-Date)" | Out-File -Append -FilePath "status.log"
 Foreach ($NetWorkerSaveSet in $NetWorkerSaveSets)
