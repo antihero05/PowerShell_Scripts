@@ -223,6 +223,7 @@ If (-Not (Test-Path "workingset.csv"))
     $NetWorkerSaveSetsWorkingSet | ConvertTo-Csv | Out-File "$(Get-FormattedDate)_cloningset.csv"
 }
 $NetWorkerSaveSets = Import-Csv "workingset.csv"
+$NetWorkerSaveSetsWorkingSet = $NetWorkerSaveSets
 $NetWorkerSaveSetRetention = Get-Retention -Quartal $Quartal -Years 1
 Write-Output "### Started cloning for tape backup at $(Get-Date)" | Out-File -Append -FilePath "status.log"
 Foreach ($NetWorkerSaveSet in $NetWorkerSaveSets)
