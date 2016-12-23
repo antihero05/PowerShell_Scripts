@@ -59,13 +59,14 @@ ForEach ($Switch in $Switches)
     $Result = Invoke-Expression -Command:$Command
     $InterfacesStatus = $Result | Where-Object {$_ -match "INTEGER: 2"}
     $InterfacesStatus | Foreach-Object {
-        $InterfaceIndex = $_.Substring(22,5)
-        If ($InterfaceIndex -gt 10100 -and $InterfaceIndex -lt 14500)
+        $Temp = ($_ -Split " ")[0] -Split "\."
+        $InterfaceIndex = $Temp[-1].ToString()
+        $InterfaceName = ($InterfacesName | Where-Object {$_.Index -eq $InterfaceIndex}).Name
+        If ($InterfaceName -match "GigabitEthernet1/")
         {
             $Interface = "" | Select-Object Index, Name, LastChanged
             $Interface.Index = $InterfaceIndex
-            $Temp = $InterfacesName | Where-Object {$_.Index -eq $Interface.Index}
-            $Interface.Name = $Temp.Name
+            $Interface.Name = $InterfaceName
             $Temp = $InterfacesLastChanged | Where-Object {$_.Index -eq $Interface.Index}
             $Interface.LastChanged = $Starttime.AddSeconds($Temp.Timeticks / 100)
             If ($Interface.LastChanged -lt (Get-Date).AddDays(-30))
