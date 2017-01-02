@@ -1,0 +1,118 @@
+#Copyright (C) 2017 Max Wimmelbacher
+#
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+Function Get-DFSReferrals {
+    Param (
+        [Parameter(Mandatory)]
+        [ValidateScript({
+            If (Test-Path -LiteralPath $_ -PathType Container) 
+            {
+                $true
+            }
+            Else
+            {
+                Throw "Could not find path '$_'"
+            }
+        })]
+        [string]$Path
+    )
+$DFSWin32API = @"
+using System;
+using System.Collections.Generic;
+using System.Management.Automation;
+using System.Runtime.InteropServices;
+public class DFSWin32API
+{
+    [DllImport("netapi32.dll", SetLastError = true)]
+    private static extern int NetApiBufferFree(IntPtr buffer);
+    [DllImport("netapi32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    private static extern int NetDfsGetClientInfo([MarshalAs(UnmanagedType.LPWStr)] string EntryPath, [MarshalAs(UnmanagedType.LPWStr)] string ServerName, [MarshalAs(UnmanagedType.LPWStr)] string ShareName, int Level, ref IntPtr Buffer);
+    public struct DFS_INFO_3
+    {
+        [MarshalAs(UnmanagedType.LPWStr)]
+        public string EntryPath;
+        [MarshalAs(UnmanagedType.LPWStr)]
+        public string Comment;
+        public UInt32 State;
+        public UInt32 NumberOfStorages;
+        public IntPtr Storages;
+    }
+    public struct DFS_STORAGE_INFO
+    {
+        public Int32 State;
+        [MarshalAs(UnmanagedType.LPWStr)]
+        public string ServerName;
+        [MarshalAs(UnmanagedType.LPWStr)]
+        public string ShareName;
+    }
+    public static List<PSObject> NetDfsInfo(string DFSPath)
+    {
+        IntPtr Buffer = new IntPtr();
+        List<PSObject> ReturnList = new List<PSObject>();
+        try
+        {
+            int result = NetDfsGetClientInfo(DFSPath, null, null, 3, ref Buffer);
+            if (result != 0)
+            {
+                throw (new SystemException("Error getting DFS information"));
+            }
+            else
+            {
+                DFS_INFO_3 DFSInfo = (DFS_INFO_3)Marshal.PtrToStructure(Buffer, typeof(DFS_INFO_3));
+
+                for (int i = 0; i < DFSInfo.NumberOfStorages; i++)
+                {
+                    IntPtr DFSStorage = new IntPtr(DFSInfo.Storages.ToInt64() + i * Marshal.SizeOf(typeof(DFS_STORAGE_INFO)));
+                    DFS_STORAGE_INFO DFSStorageInfo = (DFS_STORAGE_INFO)Marshal.PtrToStructure(DFSStorage, typeof(DFS_STORAGE_INFO));
+                    PSObject psObject = new PSObject();
+                    psObject.Properties.Add(new PSNoteProperty("State", DFSStorageInfo.State));
+                    psObject.Properties.Add(new PSNoteProperty("ServerName", DFSStorageInfo.ServerName));
+                    psObject.Properties.Add(new PSNoteProperty("ShareName", DFSStorageInfo.ShareName));
+                    ReturnList.Add(psObject);
+                }
+            }
+        }
+        catch
+        {
+            PSObject psObject = new PSObject();
+            psObject.Properties.Add(new PSNoteProperty("State", "6"));
+            psObject.Properties.Add(new PSNoteProperty("ServerName", null));
+            psObject.Properties.Add(new PSNoteProperty("ShareName", DFSPath));
+            ReturnList.Add(psObject);
+        }
+        finally
+        {
+            NetApiBufferFree(Buffer);
+        }
+        return ReturnList;
+    }
+}
+"@
+    If (-not ('DFSWin32API' -as [Type]))
+    {
+        Add-Type -TypeDefinition $DFSWin32API
+    }
+    $DFSInformation = [DFSWin32API]::NetDfsInfo($Path) | Where-Object { $_.State -eq 6 }[0]
+    If ($DFSInformation.ServerName -eq $null)
+    {
+        $DFSInformation = $DFSInformation.ShareName
+    }
+    Else
+    {
+        $DFSInformation = "\\$($DFSInformation.ServerName)\$($DFSInformation.ShareName)"
+    }
+    Return $DFSInformation
+}
