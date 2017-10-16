@@ -61,12 +61,26 @@ ForEach ($Switch in $Switches)
     $Random = Get-Random
     $Command = "..\Binary\snmpset.exe -v 2c -c $($SNMPCommunity) $($Switch) "
     $Command = $Command + ".1.3.6.1.4.1.674.10895.5000.2.6132.1.1.1.2.9.1.1.0 i 1 "
+    Invoke-Expression -Command:$Command
+    $Command = "..\Binary\snmpset.exe -v 2c -c $($SNMPCommunity) $($Switch) "
     $Command = $Command + ".1.3.6.1.4.1.674.10895.5000.2.6132.1.1.1.2.9.1.3.0 s / "
+    Invoke-Expression -Command:$Command
+    $Command = "..\Binary\snmpset.exe -v 2c -c $($SNMPCommunity) $($Switch) "
     $Command = $Command + ".1.3.6.1.4.1.674.10895.5000.2.6132.1.1.1.2.9.1.4.0 s running-config "
+    Invoke-Expression -Command:$Command
+    $Command = "..\Binary\snmpset.exe -v 2c -c $($SNMPCommunity) $($Switch) "
     $Command = $Command + ".1.3.6.1.4.1.674.10895.5000.2.6132.1.1.1.2.9.1.5.0 i 3 "
+    Invoke-Expression -Command:$Command
+    $Command = "..\Binary\snmpset.exe -v 2c -c $($SNMPCommunity) $($Switch) "
     $Command = $Command + ".1.3.6.1.4.1.674.10895.5000.2.6132.1.1.1.2.9.1.8.0 i 1 "
+    Invoke-Expression -Command:$Command
+    $Command = "..\Binary\snmpset.exe -v 2c -c $($SNMPCommunity) $($Switch) "
     $Command = $Command + ".1.3.6.1.4.1.674.10895.5000.2.6132.1.1.1.2.9.1.9.0 x $($TFTPServerHex) "
+    Invoke-Expression -Command:$Command
+    $Command = "..\Binary\snmpset.exe -v 2c -c $($SNMPCommunity) $($Switch) "
     $Command = $Command + ".1.3.6.1.4.1.674.10895.5000.2.6132.1.1.1.2.9.1.13.0 s $($Switch).cfg "
+    Invoke-Expression -Command:$Command
+    $Command = "..\Binary\snmpset.exe -v 2c -c $($SNMPCommunity) $($Switch) "
     $Command = $Command + ".1.3.6.1.4.1.674.10895.5000.2.6132.1.1.1.2.9.1.6.0 i 1 "
     Invoke-Expression -Command:$Command
     Start-Sleep -Seconds 3
