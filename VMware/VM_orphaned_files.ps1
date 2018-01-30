@@ -62,7 +62,7 @@ Foreach ($Datastore in $Datastores)
             $FileObject = "" | Select Name, FullPath, SizeInGB
             $FileObject.Name = $File.Path
             $FileObject.FullPath = $Folder.Folderpath + $File.Path
-            $FileObject.SizeInGB = $File.FileSize / 1GB
+            $FileObject.SizeInGB = [math]::Round($File.FileSize / 1GB)
             If ($FileObject.Name)
             {
                 If ($FileObject.Name.Contains(".vmdk")) 
